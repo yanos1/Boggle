@@ -6,7 +6,7 @@ def read_words():
             word_list.append(word.replace("\n", ""))
     return word_list
 
-
+WORDS = read_words()
 
 
 

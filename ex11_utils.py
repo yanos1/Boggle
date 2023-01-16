@@ -12,11 +12,6 @@ WORD_LIST = read_words()
 MOVEMENTS = [(-1, 0), (1, 0), (0, 1), (0, -1),
              (-1, 1), (-1, -1), (1, 1), (1, -1)]
 
-
-def board_locations(board):
-    return [(i, j) for i in range(len(board)) for j in range(len(board[0]))]
-
-
 def no_space_between_locations(path):
     index = 1
     for row, col in path:  # 1, 2
@@ -49,16 +44,11 @@ def is_valid_location(location, rows_size, cols_size):
 
 
 def in_word_list(word: str):
+    #BINARY SEARCH IT?
+
     if word in WORD_LIST:
         return word
     return None
-
-
-def does_combination_exist(combination, words):
-    for word in words:
-        if combination in word[0:len(combination) + 1]:
-            return True
-    return False
 
 
 def is_valid_path(board: Board, path: Path, words: Iterable[str]) -> Optional[
@@ -71,87 +61,63 @@ def is_valid_path(board: Board, path: Path, words: Iterable[str]) -> Optional[
     return res
 
 
-def add_tuples(tup1, tup2):
-    return tuple(tup1[i] + tup2[i] for i in range(len(tup1)))
-
-
 def find_length_n_paths(n: int, board: Board, words: Iterable[str]) -> List[
     Path]:
-    visited = [[False for i in range(len(board[0]))] for j in
-               range(len(board))]
-    return find_length_n_paths_helper(n, board, words, 0, visited, loc=(0, 0),
-                                      cur_path=[], res=[])
-
-
-def find_length_n_paths_helper(n: int, board: Board, words: Iterable[str],
-                               size: int, visited, res, cur_path, loc):
-    if size == n:
-        word = path_to_word(board, cur_path)
-        if word in words:
-            res.append(cur_path)
-            cur_path = []
-        else:
-            cur_path = []
-            return
-    cur_path.append(loc)
-    cur_word = path_to_word(board, cur_path)
-    if cur_word == None:
-
-        return
-    if not does_combination_exist(cur_word, words):
-        return
-    if visited[loc[0]][loc[1]]:
-        return
-    visited[loc[0]][loc[1]] = True
-
-    for direction in MOVEMENTS:
-        find_length_n_paths_helper(n, board, words, size + 1, visited, res,
-                                   cur_path, add_tuples(loc, direction))
-        visited[loc[0]][loc[1]] = False
-        cur_path = cur_path[:-1]
-
+    res = []
+    visited = [[False for i in range(len(board[0]))] for j in range(len(board))]
+    for i in range(len(board)):
+        for j in range(len(board[0])):
+            find_length_n_paths_helper(n,board, visited, i, j, [], words, res)
     return res
+
+
+def find_length_n_paths_helper(n, board, visited, i, j, current_path, words, res):
+    if len(current_path) == n:
+        word = path_to_word(board,current_path)
+        if in_word_list(word):
+            if current_path not in res:
+                res.append(current_path)
+        return
+    if not is_valid_location((i,j),len(board)-1,len(board[0])-1):
+        return
+    if visited[i][j]:
+        return
+    current_path.append((i,j))
+    visited[i][j] = True
+    for direction in MOVEMENTS:
+        find_length_n_paths_helper(n,board,visited,i+direction[0],j +direction[1],current_path,words,res)
+    visited[i][j] = False
+    current_path = current_path[:-1]
 
 
 def find_length_n_words(n: int, board: Board, words: Iterable[str]) -> List[
     Path]:
-    visited = [[False for i in range(len(board[0]))] for j in
-    range(len(board))]
-    return find_length_n_paths_helper(n, board, words, 0, visited, loc=(0, 0),
-                                      cur_path=[], res=[])
-
-
-def find_length_n_words_helper(n: int, board: Board, words: Iterable[str],
-                               size: int, visited, res, cur_path, loc):
-    if size == n:
-        word = path_to_word(board, cur_path)
-        if word in words:
-            res.append(word)
-            cur_path = []
-        else:
-            cur_path = []
-            return
-    cur_path.append(loc)
-    cur_word = path_to_word(board, cur_path)
-    if cur_word == None:
-        return
-    if not does_combination_exist(cur_word, words):
-        return
-    if visited[loc[0]][loc[1]]:
-        return
-    visited[loc[0]][loc[1]] = True
-
-    for direction in MOVEMENTS:
-        find_length_n_paths_helper(n, board, words, size + 1, visited, res,
-                                   cur_path, add_tuples(loc, direction))
-        visited[loc[0]][loc[1]] = False
-        cur_path = cur_path[:-1]
-
+    all_paths = find_length_n_paths(n,board,words)
+    res = []
+    for path in all_paths:
+        word_length = len(path_to_word(board,path))
+        if word_length == n:
+            res.append(path)
     return res
 
 
+def increase_score(word):
+    return len(word)**2
+
+
 def max_score_paths(board: Board, words: Iterable[str]) -> List[Path]:
-    pass
+    best_solution = []
+    for i in range(3, len(board)*len(board[0])):
+        cur = find_length_n_words(i,board,words)
+        # go over and take the best scored word
+        best_solution.extend(cur)
+    return best_solution
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
@@ -165,7 +131,15 @@ if __name__ == '__main__':
     # print(is_valid_path(cur_board, [(0, 0), (1, 3), (2, 0)], WORD_LIST))
     # # Test 2
     # print(board_locations(cur_board))
-    # Test 3
     pprint(cur_board)
-    print(find_length_n_paths(3, cur_board, WORD_LIST))
-    print(find_length_n_words(3, cur_board, WORD_LIST))
+    # Test
+    #     print(find_length_n_paths(3, [['QU', 'S', 'Y', 'T'],
+    #  ['I', 'H', 'O', 'A'],
+    #  ['T', 'R', 'E', 'F'],
+    #  ['T', 'I', 'S', 'C']], WORD_LIST))
+    #     print(find_length_n_words(3, [['QU', 'S', 'Y', 'T'],
+    #  ['I', 'H', 'O', 'A'],
+    #  ['T', 'R', 'E', 'F'],
+    #  ['T', 'I', 'S', 'C']], WORD_LIST))
+    #test
+    print(max_score_paths(cur_board,WORD_LIST))
