@@ -1,9 +1,20 @@
 import tkinter as tk
-from tkinter import messagebox
 import time
-from word_list import WORDS
-from boggle_board_randomizer import randomize_board,LETTERS
-from boggle_game import *
+from word_list import JOKES_AND_FUN_FACTS
+import random
+import pygame
+
+# initialize pygame mixer
+pygame.mixer.init()
+
+# load a sound file
+
+
+# function to play the sound
+
+
+# create a button to play the sound
+
 
 BUTTON_STYLE = {
     'font': ('Arial', 18),
@@ -17,19 +28,17 @@ BUTTON_STYLE = {
 
 
 class BoggleUI:
-    def __init__(self,add_chars_callback, check_word_callback,delete_word_callback,start_game_callback):
+    def __init__(self,add_chars_callback, check_word_callback,delete_word_callback,start_game_callback,end_game_callback):
         self.root = tk.Tk()
-        self.root.geometry("550x550")
+        self.root.geometry("700x600")
         self.root.configure(bg='#ADD8E6') # set the background color to light blue
-
-        self.frame = tk.Frame(self.root)
 
         # Create word label
         self.word_label = tk.Label(self.root, text="", font=("Arial", 20), bg='#ADD8E6')
         self.word_label.pack()
         self.found_words_label = tk.Label(self.root, text="Words found: ", font=("Arial", 20), bg='#ADD8E6')
-
-
+        self.fun_fact_label = tk.Label(self.root, text=random.choice(JOKES_AND_FUN_FACTS), font=("Ariel", 20), bg='#ADD8E6',pady=100)
+        self.secred_sound_buttom = tk.Button(self.root, text='Secret Button', command= lambda : [self.secred_sound_buttom.forget(),self.play_sound()])
 
 
         # Create a frame for letter buttons
@@ -42,22 +51,34 @@ class BoggleUI:
         self.check_word_callback = check_word_callback
         self.start_game_callback = start_game_callback
         self.delete_word_callback = delete_word_callback
+        self.end_game_callback=end_game_callback
 
         # Create check button
+
 
         # Create timer label
         self.timer_label = tk.Label(self.root, text="", font=("Arial", 20), bg='#ADD8E6',pady=25)
         self.timer_label.pack_forget()
-        self.ready_button = tk.Button(self.root, text="I AM READY",
-                                      command=self.start_game)
+        self.ready_button = tk.Button(self.root, text="I AM READY", padx=50,
+                                      command=self.start_game,**BUTTON_STYLE)
+        self.end_game_label = tk.Label(self.root, text="Nicely done!",font=("Arial", 20), bg='#ADD8E6')
+        self.end_game_button = tk.Button(self.root, text="GO AGAIN!",
+                                      command=self.end_game)
+        self.new_game_button = tk.Button(self.root, text="Restart",**BUTTON_STYLE,
+                                      command=lambda : [self.new_game_button.forget(),self.start_game()])
         self.ready_button.pack()
+        self.fun_fact_label.pack()
         self.utility_buttons_and_info()
+        self.sound = pygame.mixer.Sound(r"C:\Users\Yan Nosrati\Downloads\Mission-Impossible.mp3")
+
+        self.sounds = False
 
 
     def main_loop(self):
         self.root.mainloop()
 
     def start_game(self):
+        self.fun_fact_label.destroy()
         self.board = self.start_game_callback()
         self.frame.pack()
         self.word_label.pack()
@@ -66,6 +87,9 @@ class BoggleUI:
         self.ready_button.destroy()
         self.create_board()
         self.start_timer()
+        self.found_words_label["text"] = "Words Found: "
+        self.score_counter["text"] = "0"
+        self.sounds = False
 
     def create_board(self):
         for i in range(len(self.board)):
@@ -96,9 +120,8 @@ class BoggleUI:
 
     def check_word(self):
         found_words,score = self.check_word_callback()
-        print(found_words,score)
         if found_words:
-            self.found_words_label.config(text=f"Words Found : {found_words}")
+            self.found_words_label.config(text=f"Words Found :\n {found_words}")
         self.score_counter.config(text=score)
         self.clear_word()
 
@@ -114,16 +137,34 @@ class BoggleUI:
 
 
     def start_timer(self):
-        self.end_time = time.time() + 180
+        self.end_time = time.time() +10
         self.countdown()
 
     def countdown(self):
         remaining = int(self.end_time - time.time())
         if remaining <= 0:
+            for button in self.letter_buttons:
+                button["state"] = "disabled"
             self.timer_label.config(text="Time's up!")
+
+            self.end_game()
+
             return
+        elif remaining < 171 and not self.sounds:
+            self.secred_sound_buttom.pack(side=tk.LEFT)
+            self.sounds = True
+
+
         self.timer_label.config(text=str(remaining) + " seconds remaining.")
         self.timer_label.after(100, self.countdown)
+
+    def play_sound(self):
+        self.sound.play()
+    def end_game(self):
+        self.end_game_callback()
+        self.new_game_button.pack()
+        self.sound.stop()
+
 
 
 

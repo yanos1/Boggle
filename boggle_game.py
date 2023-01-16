@@ -18,6 +18,19 @@ class BoggleGame:
         self._last_clicked = None
         self._score = 0
 
+    def get_cur_word(self):
+        return self._cur_word
+
+    def get_words_found(self):
+        return self._words_found
+
+    def reset_all_words(self):
+        self._cur_word = []
+        self._words_found = []
+        return self._cur_word,self._words_found
+
+
+
     def add_tuples(self, direction):
         return tuple((direction[i] + self._last_clicked[i]) for i in
                      range(len(direction)))
@@ -63,3 +76,4 @@ class BoggleGame:
         self._cur_word = []
         self._last_clicked = None
         return self._cur_word
+

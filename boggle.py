@@ -6,7 +6,7 @@ from boggle_board_randomizer import randomize_board, LETTERS
 
 class BoggleControl:
     def __init__(self):
-        self.ui = BoggleUI(self.add_chars, self.check_word,self.clear_word, self.start_game)
+        self.ui = BoggleUI(self.add_chars, self.check_word,self.clear_word, self.start_game,self.end_game)
         self.game = None
         self.ui.main_loop()
 
@@ -24,6 +24,11 @@ class BoggleControl:
 
     def clear_word(self):
         return self.game.clear_word()
+
+    def end_game(self):
+        return self.game.reset_all_words()
+
+
 
 
 if __name__ == '__main__':
