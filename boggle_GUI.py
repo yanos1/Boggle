@@ -137,7 +137,7 @@ class BoggleUI:
 
 
     def start_timer(self):
-        self.end_time = time.time() +10
+        self.end_time = time.time() +180
         self.countdown()
 
     def countdown(self):
