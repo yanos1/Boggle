@@ -1,5 +1,5 @@
 from typing import List, Tuple, Iterable, Optional
-from boggle_board_randomizer import randomize_board, LETTERS, BOARD_SIZE
+from boggle_board_randomizer import randomize_board, LETTERS
 from word_list import read_words
 from pprint import pprint
 
@@ -43,22 +43,31 @@ def is_valid_location(location, rows_size, cols_size):
     return False
 
 
-def in_word_list(word: str):
-    #BINARY SEARCH IT?
+def in_word_list_log_time(word: str,words):
+        left = 0
+        right = len(words) - 1
+        while left <= right:
+            middle = (left + right) // 2
+            if words[middle] == word:
+                return middle
+            elif words[middle] < word:
+                left = middle + 1
+            else:
+                right = middle - 1
+        return
 
-    if word in WORD_LIST:
-        return word
-    return None
 
-
-def is_valid_path(board: Board, path: Path, words: Iterable[str]) -> Optional[
+def is_valid_path(board: Board, path: Path, words) -> Optional[
     str]:
     if no_space_between_locations(path):
         word = path_to_word(board, path)
-        res = in_word_list(word)
+        res = in_word_list_log_time(word,words)
+        if res:
+            return words[res]
+        else:
+            return None
     else:
         return None
-    return res
 
 
 def find_length_n_paths(n: int, board: Board, words: Iterable[str]) -> List[
@@ -74,7 +83,7 @@ def find_length_n_paths(n: int, board: Board, words: Iterable[str]) -> List[
 def find_length_n_paths_helper(n, board, visited, i, j, current_path, words, res):
     if len(current_path) == n:
         word = path_to_word(board,current_path)
-        if in_word_list(word):
+        if in_word_list_log_time(word,words):
             if current_path not in res:
                 res.append(current_path)
         return
@@ -89,29 +98,34 @@ def find_length_n_paths_helper(n, board, visited, i, j, current_path, words, res
     visited[i][j] = False
     current_path = current_path[:-1]
 
-
-def find_length_n_words(n: int, board: Board, words: Iterable[str]) -> List[
-    Path]:
-    all_paths = find_length_n_paths(n,board,words)
-    res = []
+def find_len_n_words_help(all_paths,board,n,res):
     for path in all_paths:
-        word_length = len(path_to_word(board,path))
+        word_length = len(path_to_word(board, path))
         if word_length == n:
             res.append(path)
     return res
 
 
-def increase_score(word):
-    return len(word)**2
+def find_length_n_words(n: int, board: Board, words: Iterable[str]) -> List[
+    Path]:
+    sol = []
+    for i in range(n//2+1):
+        cur_paths = find_length_n_paths(n-i,board,words)
+        valid_paths = find_len_n_words_help(cur_paths,board,n,[])
+        for path in valid_paths:
+            sol.append(path)
+    return sol
 
 
 def max_score_paths(board: Board, words: Iterable[str]) -> List[Path]:
-    best_solution = []
-    for i in range(3, len(board)*len(board[0])):
+
+    found = {}
+    for i in range(len(board)*len(board[0]),2,-1):
         cur = find_length_n_words(i,board,words)
-        # go over and take the best scored word
-        best_solution.extend(cur)
-    return best_solution
+        for path in cur:
+            if path_to_word(board,path) not in found:
+                found[path_to_word(board,path)] = path
+    return list(found.values())
 
 
 
@@ -120,26 +134,3 @@ def max_score_paths(board: Board, words: Iterable[str]) -> List[Path]:
 
 
 
-if __name__ == '__main__':
-    # Test 1
-    # print(is_valid_path(cur_board, [(0, 0), (1, 0), (2, 0)], WORD_LIST))
-    # print(is_valid_path(cur_board, [(0, 0), (1, 1), (2, 0)], WORD_LIST))
-    # print(is_valid_path(cur_board, [(0, 0), (1, 0), (2, 0)], WORD_LIST))
-    # print(is_valid_path(cur_board, [(0, 0), (1, 1), (1, 2)], WORD_LIST))
-    # print("")
-    # print(is_valid_path(cur_board, [(0, 0), (1, 2), (2, 0)], WORD_LIST))
-    # print(is_valid_path(cur_board, [(0, 0), (1, 3), (2, 0)], WORD_LIST))
-    # # Test 2
-    # print(board_locations(cur_board))
-    pprint(cur_board)
-    # Test
-    #     print(find_length_n_paths(3, [['QU', 'S', 'Y', 'T'],
-    #  ['I', 'H', 'O', 'A'],
-    #  ['T', 'R', 'E', 'F'],
-    #  ['T', 'I', 'S', 'C']], WORD_LIST))
-    #     print(find_length_n_words(3, [['QU', 'S', 'Y', 'T'],
-    #  ['I', 'H', 'O', 'A'],
-    #  ['T', 'R', 'E', 'F'],
-    #  ['T', 'I', 'S', 'C']], WORD_LIST))
-    #test
-    print(max_score_paths(cur_board,WORD_LIST))
