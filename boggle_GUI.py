@@ -69,7 +69,7 @@ class BoggleUI:
         self.ready_button.pack()
         self.fun_fact_label.pack()
         self.utility_buttons_and_info()
-        self.sound = pygame.mixer.Sound(r"C:\Users\Yan Nosrati\Downloads\Mission-Impossible.mp3")
+        self.sound = pygame.mixer.Sound(r"C:\Users\Meshi Nosrati\Downloads\Mission-Impossible.mp3")
 
         self.sounds = False
 
@@ -89,6 +89,7 @@ class BoggleUI:
         self.start_timer()
         self.found_words_label["text"] = "Words Found: "
         self.score_counter["text"] = "0"
+        self.word_label["text"] = ""
         self.sounds = False
 
     def create_board(self):
@@ -97,7 +98,6 @@ class BoggleUI:
                 button = tk.Button(self.frame, text=self.board[i][j],**BUTTON_STYLE,
                                    command=lambda letter=(i,j): self.update_word(letter))
                 button.grid(row=i, column=j)
-                # button.pack_forget()
                 self.letter_buttons.append(button)
 
     def utility_buttons_and_info(self):
@@ -113,10 +113,6 @@ class BoggleUI:
         self.score_counter = tk.Label(self.frame, text="0",
                                font=("Arial", 17), bg='white')
         self.score_counter.grid(row=5, column=2)
-
-
-
-
 
     def check_word(self):
         found_words,score = self.check_word_callback()
@@ -137,7 +133,7 @@ class BoggleUI:
 
 
     def start_timer(self):
-        self.end_time = time.time() +180
+        self.end_time = time.time() +50
         self.countdown()
 
     def countdown(self):
