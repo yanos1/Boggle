@@ -69,8 +69,10 @@ class BoggleUI:
         self.ready_button.pack()
         self.fun_fact_label.pack()
         self.utility_buttons_and_info()
-        self.sound = pygame.mixer.Sound(r"C:\Users\Meshi Nosrati\Downloads\Mission-Impossible.mp3")
-
+        try:
+            self.sound = pygame.mixer.Sound(r"C:\Users\Meshi Nosrati\Downloads\Mission-Impossible.mp3")
+        except(FileNotFoundError):
+            self.sound = None
         self.sounds = False
 
 
@@ -155,7 +157,10 @@ class BoggleUI:
         self.timer_label.after(100, self.countdown)
 
     def play_sound(self):
-        self.sound.play()
+        try:
+            self.sound.play()
+        except(Exception):
+            "cant load file."
     def end_game(self):
         self.end_game_callback()
         self.new_game_button.pack()
