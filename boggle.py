@@ -1,6 +1,5 @@
 from boggle_GUI import BoggleUI
 from boggle_game import BoggleGame
-from word_list import WORDS
 from boggle_board_randomizer import randomize_board, LETTERS
 
 

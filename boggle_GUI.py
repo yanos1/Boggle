@@ -29,6 +29,7 @@ BUTTON_STYLE = {
 
 class BoggleUI:
     def __init__(self,add_chars_callback, check_word_callback,delete_word_callback,start_game_callback,end_game_callback):
+        # Create the root
         self.root = tk.Tk()
         self.root.geometry("700x600")
         self.root.configure(bg='#ADD8E6') # set the background color to light blue
@@ -43,20 +44,18 @@ class BoggleUI:
 
         # Create a frame for letter buttons
         self.frame = tk.Frame(self.root)
-
         self.letter_buttons = []
 
-        self.board = None
+        self.board = None  # will be updated when game starts
+
+        #Connection to the control class
         self.add_chars_callback = add_chars_callback
         self.check_word_callback = check_word_callback
         self.start_game_callback = start_game_callback
         self.delete_word_callback = delete_word_callback
         self.end_game_callback=end_game_callback
 
-        # Create check button
-
-
-        # Create timer label
+        # Button creation
         self.timer_label = tk.Label(self.root, text="", font=("Arial", 20), bg='#ADD8E6',pady=25)
         self.timer_label.pack_forget()
         self.ready_button = tk.Button(self.root, text="I AM READY", padx=50,
@@ -69,7 +68,7 @@ class BoggleUI:
         self.ready_button.pack()
         self.fun_fact_label.pack()
         self.utility_buttons_and_info()
-        try:
+        try: # try to add music
             self.sound = pygame.mixer.Sound(r"C:\Users\Meshi Nosrati\Downloads\Mission-Impossible.mp3")
         except(FileNotFoundError):
             self.sound = None
@@ -135,7 +134,7 @@ class BoggleUI:
 
 
     def start_timer(self):
-        self.end_time = time.time() +50
+        self.end_time = time.time() +180
         self.countdown()
 
     def countdown(self):
@@ -164,7 +163,8 @@ class BoggleUI:
     def end_game(self):
         self.end_game_callback()
         self.new_game_button.pack()
-        self.sound.stop()
+        if self.sounds:
+            self.sound.stop()
 
 
 

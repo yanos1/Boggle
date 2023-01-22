@@ -1,15 +1,20 @@
-from typing import List, Tuple, Iterable, Optional
-from boggle_board_randomizer import randomize_board, LETTERS
-from word_list import read_words
+from typing import List, Tuple, Iterable
 
 Board = List[List[str]]
 Path = List[Tuple[int, int]]
 
-cur_board = randomize_board(LETTERS)
-WORD_LIST = read_words()
-
 MOVEMENTS = [(-1, 0), (1, 0), (0, 1), (0, -1),
              (-1, 1), (-1, -1), (1, 1), (1, -1)]
+
+
+def read_words():
+    word_list = []
+    with open("boggle_dict.txt") as f:
+        for word in f.readlines():
+            word_list.append(word.replace("\n", ""))
+    return word_list
+
+###################################################
 
 
 def has_space_between_locations(loc1, loc2):
@@ -148,4 +153,3 @@ def max_score_paths(board: Board, words: Iterable[str]) -> List[Path]:
             if path_to_word(board,path) not in found:
                 found[path_to_word(board,path)] = path
     return list(found.values())
-

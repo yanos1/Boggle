@@ -1,14 +1,3 @@
-def read_words():
-    word_list = []
-    with open("boggle_dict.txt") as f:
-        for word in f.readlines():
-            word_list.append(word.replace("\n", ""))
-    return word_list
-
-
-WORDS = read_words()
-
-
 
 JOKES_AND_FUN_FACTS = [
     "Why did the Boggle game go to the doctor?\n Because it had a 'board' injury",

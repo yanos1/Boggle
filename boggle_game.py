@@ -1,11 +1,9 @@
-from boggle_board_randomizer import randomize_board
-from ex11_utils import path_to_word
-from word_list import WORDS
-from typing import *
+from ex11_utils import read_words
+
 
 DIRECTIONS = [(1, 0), (1, 1), (0, 1), (0, -1), (1, -1), (-1, 0), (-1, 1),
               (-1, -1)]
-
+WORDS = read_words()
 
 class BoggleGame:
     def __init__(self, rows, cols, board):
@@ -49,7 +47,6 @@ class BoggleGame:
         return True
 
     def append_letter(self, location):
-        print(self._last_clicked)
         if self.possible_location(location):
             self._cur_word.append(self.board[location[0]][location[1]])
             self._last_clicked = location
