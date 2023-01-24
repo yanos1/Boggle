@@ -1,6 +1,6 @@
 import tkinter as tk
 import time
-from word_list import JOKES_AND_FUN_FACTS
+from fun_facts import JOKES_AND_FUN_FACTS
 import random
 import pygame
 
